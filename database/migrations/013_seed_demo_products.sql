@@ -74,3 +74,23 @@ END, CONCAT(product.name, ' product image'), 0, 1
 FROM products product
 WHERE product.slug IN ('sanzida-satin-dress', 'mira-pleated-blouse', 'laila-everyday-tote')
     AND NOT EXISTS (SELECT 1 FROM product_images existing WHERE existing.product_id = product.id);
+
+INSERT INTO product_images (product_id, file_path, alt_text, sort_order, is_primary)
+SELECT product.id, CASE product.slug
+        WHEN 'sanzida-satin-dress' THEN 'uploads/products/demo-satin-slip-dress-left.svg'
+        WHEN 'mira-pleated-blouse' THEN 'uploads/products/demo-linen-wrap-blouse-left.svg'
+        WHEN 'laila-everyday-tote' THEN 'uploads/products/demo-structured-shoulder-bag-left.svg'
+END, CONCAT(product.name, ' side view'), 1, 0
+FROM products product
+WHERE product.slug IN ('sanzida-satin-dress', 'mira-pleated-blouse', 'laila-everyday-tote')
+    AND NOT EXISTS (SELECT 1 FROM product_images existing WHERE existing.product_id = product.id AND existing.sort_order = 1);
+
+INSERT INTO product_images (product_id, file_path, alt_text, sort_order, is_primary)
+SELECT product.id, CASE product.slug
+        WHEN 'sanzida-satin-dress' THEN 'uploads/products/demo-satin-slip-dress-right.svg'
+        WHEN 'mira-pleated-blouse' THEN 'uploads/products/demo-linen-wrap-blouse-right.svg'
+        WHEN 'laila-everyday-tote' THEN 'uploads/products/demo-structured-shoulder-bag-right.svg'
+END, CONCAT(product.name, ' opposite view'), 2, 0
+FROM products product
+WHERE product.slug IN ('sanzida-satin-dress', 'mira-pleated-blouse', 'laila-everyday-tote')
+    AND NOT EXISTS (SELECT 1 FROM product_images existing WHERE existing.product_id = product.id AND existing.sort_order = 2);

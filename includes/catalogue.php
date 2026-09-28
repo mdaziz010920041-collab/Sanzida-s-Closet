@@ -124,13 +124,40 @@ function catalogue_demo_product_by_slug(string $slug): ?array
         if (($product['slug'] ?? '') === $slug) {
             $basePrice = (float) ($product['base_price'] ?? 0);
             $sellingPrice = (float) ($product['selling_price'] ?? $basePrice);
-            $product['images'] = [[
-                'id' => 1,
-                'file_path' => (string) ($product['image_path'] ?? ''),
-                'alt_text' => (string) ($product['name'] ?? 'Product image'),
-                'sort_order' => 1,
-                'is_primary' => 1,
-            ]];
+            $productId = (int) ($product['id'] ?? 1);
+            $angleSets = [
+                1 => ['uploads/products/demo-satin-slip-dress-left.svg', 'uploads/products/demo-satin-slip-dress-right.svg'],
+                2 => ['uploads/products/demo-satin-slip-dress-back.svg', 'uploads/products/demo-satin-slip-dress-top.svg'],
+                3 => ['uploads/products/demo-satin-slip-dress-right.svg', 'uploads/products/demo-satin-slip-dress-bottom.svg'],
+                4 => ['uploads/products/demo-satin-slip-dress-left.svg', 'uploads/products/demo-satin-slip-dress-back.svg'],
+                5 => ['uploads/products/demo-satin-slip-dress-top.svg', 'uploads/products/demo-satin-slip-dress-bottom.svg'],
+                6 => ['uploads/products/demo-satin-slip-dress-back.svg', 'uploads/products/demo-satin-slip-dress-right.svg'],
+                7 => ['uploads/products/demo-linen-wrap-blouse-left.svg', 'uploads/products/demo-linen-wrap-blouse-right.svg'],
+                8 => ['uploads/products/demo-linen-wrap-blouse-back.svg', 'uploads/products/demo-linen-wrap-blouse-top.svg'],
+                9 => ['uploads/products/demo-linen-wrap-blouse-right.svg', 'uploads/products/demo-linen-wrap-blouse-bottom.svg'],
+                10 => ['uploads/products/demo-linen-wrap-blouse-left.svg', 'uploads/products/demo-linen-wrap-blouse-back.svg'],
+                11 => ['uploads/products/demo-linen-wrap-blouse-top.svg', 'uploads/products/demo-linen-wrap-blouse-bottom.svg'],
+                12 => ['uploads/products/demo-linen-wrap-blouse-back.svg', 'uploads/products/demo-linen-wrap-blouse-right.svg'],
+                13 => ['uploads/products/demo-structured-shoulder-bag-left.svg', 'uploads/products/demo-structured-shoulder-bag-right.svg'],
+                14 => ['uploads/products/demo-structured-shoulder-bag-back.svg', 'uploads/products/demo-structured-shoulder-bag-top.svg'],
+                15 => ['uploads/products/demo-structured-shoulder-bag-right.svg', 'uploads/products/demo-structured-shoulder-bag-bottom.svg'],
+                16 => ['uploads/products/demo-structured-shoulder-bag-left.svg', 'uploads/products/demo-structured-shoulder-bag-back.svg'],
+                17 => ['uploads/products/demo-structured-shoulder-bag-top.svg', 'uploads/products/demo-structured-shoulder-bag-bottom.svg'],
+                18 => ['uploads/products/demo-structured-shoulder-bag-back.svg', 'uploads/products/demo-structured-shoulder-bag-right.svg'],
+                19 => ['uploads/products/demo-minimal-sandals-side.svg', 'uploads/products/demo-minimal-sandals-top.svg'],
+                20 => ['uploads/products/demo-satin-shirt-side.svg', 'uploads/products/demo-satin-shirt-back.svg'],
+            ];
+            $galleryPaths = array_merge([(string) ($product['image_path'] ?? '')], $angleSets[$productId] ?? []);
+            $product['images'] = [];
+            foreach ($galleryPaths as $imageIndex => $imagePath) {
+                $product['images'][] = [
+                    'id' => $imageIndex + 1,
+                    'file_path' => $imagePath,
+                    'alt_text' => (string) ($product['name'] ?? 'Product image') . ' view ' . ($imageIndex + 1),
+                    'sort_order' => $imageIndex + 1,
+                    'is_primary' => $imageIndex === 0 ? 1 : 0,
+                ];
+            }
             $product['videos'] = [];
             $product['variants'] = [[
                 'id' => 1,

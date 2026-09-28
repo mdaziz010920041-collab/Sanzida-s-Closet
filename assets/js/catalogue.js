@@ -216,6 +216,12 @@ document.addEventListener('DOMContentLoaded', () => {
         variantForm.querySelectorAll('[data-color-id]').forEach((button) => button.addEventListener('click', () => {
             selected.color = button.dataset.colorId || ''; variantForm.querySelectorAll('[data-color-id]').forEach((item) => item.classList.remove('is-selected')); button.classList.add('is-selected'); variantForm.querySelector('[data-selected-color]').textContent = button.querySelector('.sr-only')?.textContent || 'Selected'; updateVariant();
         }));
+        if (variants.length === 1) {
+            variantForm.querySelector('[data-size-id]')?.click();
+            variantForm.querySelector('[data-color-id]')?.click();
+        } else {
+            updateVariant();
+        }
         variantForm.querySelectorAll('[data-detail-quantity]').forEach((button) => button.addEventListener('click', () => {
             const input = variantForm.querySelector('[name="quantity"]');
             if (!input) return;

@@ -62,7 +62,7 @@ try {
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Checkout | <?= escape_html(APP_NAME) ?></title><meta name="description" content="Complete your Sanzida's Closet order."><link rel="stylesheet" href="<?= escape_html(asset_url('css/site.css')) ?>"></head>
-<body class="checkout-page">
+<body class="checkout-page" data-checkout-server-error="<?= $connection === null ? '1' : '0' ?>">
     <?php $page_title = 'Checkout'; require dirname(__DIR__) . '/components/catalogue-header.php'; ?>
     <main class="checkout-main">
         <div class="checkout-steps" aria-label="Checkout progress"><span class="is-current">1 Cart</span><span class="is-current">2 Details</span><span>3 Confirmation</span></div>
@@ -73,6 +73,7 @@ try {
     <?php if ($cart['items'] !== []): ?><script>if (window.analytics_event) window.analytics_event('begin_checkout', {currency: '<?= escape_html((string) ($cart['currency'] ?? 'INR')) ?>', value: <?= json_encode((float) $cart['total']) ?>});</script><?php endif; ?>
 </body>
 </html>
+<script src="<?= escape_html(asset_url('js/checkout.js')) ?>" defer></script>
 <script>
     document.querySelector('input[name="payment_method"][value="online_pending"]')?.click();
 </script>

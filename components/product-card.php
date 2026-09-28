@@ -9,7 +9,7 @@ function render_product_card(array $product): void
     $sellingPrice = number_format((float) ($product['selling_price'] ?? $product['base_price'] ?? 0), 2);
     $compareAtPrice = (float) ($product['compare_at_price'] ?? 0);
     $hasDiscount = $compareAtPrice > (float) ($product['selling_price'] ?? $product['base_price'] ?? 0);
-    $productUrl = base_url('products/' . rawurlencode((string) $product['slug']) . '/');
+    $productUrl = base_url('products/view.php?slug=' . rawurlencode((string) $product['slug']));
     $stock = (int) ($product['available_stock'] ?? 0);
     ?>
     <article class="product-card" data-product-slug="<?= escape_html((string) $product['slug']) ?>">

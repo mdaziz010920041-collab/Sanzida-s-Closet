@@ -27,6 +27,14 @@ mysql --default-character-set=utf8mb4 -u YOUR_USER -p < database/schema.sql
 mysql -u YOUR_USER -p -e "USE sanzidas_closet; SHOW TABLES;"
 ```
 
+Create the first admin account from the server terminal after importing the schema:
+
+```text
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='use-a-strong-12-character-password' php database/create-admin.php
+```
+
+The script creates or updates the owner account and never exposes the password in the database or application views. Do not commit the command, password, or `.env` file to GitHub.
+
 The table and relationship notes are documented in `database/RELATIONSHIPS.md`. The schema does not contain credentials, payment secrets, raw card data, or passwords.
 
 ## Payment integration
