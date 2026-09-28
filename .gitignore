@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+
+/uploads/*
+!/uploads/.gitkeep
+
+*.log
+/.idea/
+/.vscode/.env
+/uploads/*
+!/uploads/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
