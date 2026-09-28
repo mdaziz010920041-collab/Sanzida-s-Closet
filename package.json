@@ -1,0 +1,17 @@
+{
+  "name": "sanzidas-closet-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "build": "node --check api/index.js && node --check server.js && node --check lib/database.js && node --check lib/catalogue.js && node --check lib/catalogue-pages.js && node --check lib/home-page.js && node --check lib/session.js && node --check lib/auth.js && node --check lib/auth-pages.js && node --check lib/account-pages.js && node --check lib/cart.js && node --check lib/cart-pages.js && node --check lib/orders.js && node --check lib/checkout-pages.js && node --check lib/payments.js && node --check lib/returns.js && node --check lib/return-pages.js && node --check lib/admin.js && node --check lib/admin-pages.js && node --check lib/request.js && node --check lib/wishlist.js && node --check assets/js/site.js && node --check assets/js/catalogue.js && node --check assets/js/cart.js && node --check assets/js/payment.js && node --check assets/js/product-page.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "bcryptjs": "^2.4.3",
+    "mysql2": "^3.11.5",
+    "razorpay": "^2.9.6",
+    "zod": "^4.0.0"
+  }
+}

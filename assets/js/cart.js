@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initializeCart = () => {
     const drawer = document.querySelector('[data-cart-drawer]');
     const backdrop = document.querySelector('.cart-backdrop');
     const body = document.body;
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const requestCart = async (formData) => {
         formData.append('csrf_token', csrf);
-        const response = await fetch(api, { method: 'POST', body: formData, headers: { Accept: 'application/json' } });
+        const response = await fetch(api, { method: 'POST', body: new URLSearchParams(formData), headers: { Accept: 'application/json' } });
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || 'Cart update failed.');
         return data;
@@ -150,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const data = new FormData(); data.append('action', button.dataset.wishlistAction || 'add'); data.append('variant_id', button.dataset.variantId || document.querySelector('[data-selected-variant]')?.value || ''); data.append('csrf_token', csrf);
-        try { const response = await fetch(wishlistApi, { method: 'POST', body: data, headers: { Accept: 'application/json' } }); const result = await response.json(); if (response.status === 401 && result.login_url) window.location.href = result.login_url; else if (!response.ok || !result.success) throw new Error(result.message); if (window.analytics_event) window.analytics_event('add_to_wishlist', {items: [{item_id: button.dataset.variantId || document.querySelector('[data-selected-variant]')?.value || ''}]}); button.textContent = button.dataset.wishlistAction === 'move_to_cart' ? 'Moved to bag' : 'Saved to wishlist'; } catch (error) { button.insertAdjacentHTML('afterend', `<p class="form-message">${escapeHtml(error.message)}</p>`); }
+        try { const response = await fetch(wishlistApi, { method: 'POST', body: new URLSearchParams(data), headers: { Accept: 'application/json' } }); const result = await response.json(); if (response.status === 401 && result.login_url) window.location.href = result.login_url; else if (!response.ok || !result.success) throw new Error(result.message); if (window.analytics_event) window.analytics_event('add_to_wishlist', {items: [{item_id: button.dataset.variantId || document.querySelector('[data-selected-variant]')?.value || ''}]}); button.textContent = button.dataset.wishlistAction === 'move_to_cart' ? 'Moved to bag' : 'Saved to wishlist'; } catch (error) { button.insertAdjacentHTML('afterend', `<p class="form-message">${escapeHtml(error.message)}</p>`); }
     }));
-});
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeCart, { once: true });
+else initializeCart();

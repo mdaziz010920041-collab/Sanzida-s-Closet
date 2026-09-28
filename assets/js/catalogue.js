@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initializeCatalogue = () => {
     const storageKey = 'sanzidas_closet_recent_products';
 
     const readRecent = () => {
@@ -229,4 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = String(Math.max(1, Math.min(99, next)));
         }));
     }
-});
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeCatalogue, { once: true });
+else initializeCatalogue();

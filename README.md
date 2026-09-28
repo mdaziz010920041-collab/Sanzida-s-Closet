@@ -1,22 +1,31 @@
 # Sanzida's Closet
 
-Phase 1 establishes the custom PHP + MySQL application foundation for MilesWeb shared hosting.
+The application is being migrated from PHP to Node.js for Vercel. PHP files remain in the repository as the migration source, but `.vercelignore` excludes them from deployment. The Node routes listed below are migrated; other store workflows are not yet available on Vercel.
 
-## Local setup
+## Local Node setup
 
-1. Copy `.env.example` to `.env`.
-2. Set `APP_ENV=production`, `APP_DEBUG=false`, a canonical `APP_URL`, and MySQL credentials in `.env`.
-3. Create the database with `database/schema.sql`.
-4. Point the web server document root at the project root for this repository layout. A separate `public/` document root requires restructuring or an equivalent host-level route mapping because application routes currently live beside `public/`.
+Requirements: Node.js 20 or newer and a MySQL database with `database/schema.sql` and migrations `001` through `014` applied.
 
-The root `index.php` delegates to `public/index.php` so the current shared-hosting layout remains usable. No product, customer, payment, or admin behavior is implemented in this phase.
+1. Run `npm install`.
+2. Copy `.env.example` to `.env` and configure the MySQL connection, canonical `APP_URL`, and a unique `SESSION_SECRET` with at least 32 characters.
+3. Run `npm run dev` and open `http://localhost:3000`.
 
-## Foundation endpoints
+`npm run build` performs Node syntax checks. The local server serves assets from `assets/` and uploads from `uploads/`.
 
-- `/` renders the public foundation homepage.
-- `/api/health.php` reports application and database availability without exposing credentials.
+## Vercel
 
-Run PHP syntax checks with `php -l <file>` after PHP 8.x is installed and available on `PATH`.
+Import the repository as a Node.js project. Configure `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `APP_URL`, `SESSION_SECRET`, and the payment secrets in Vercel's server-side environment settings. Do not expose secrets with a `NEXT_PUBLIC_` prefix. Use a remotely reachable MySQL provider; `127.0.0.1` is only a local default.
+
+Vercel routes requests to `api/index.js`; static files are served separately. Customer and guest sessions use signed cookies plus the existing `user_sessions` table, so `SESSION_SECRET` must be stable across deployments and at least 32 characters long.
+
+## Migrated routes
+
+- Storefront home, product catalogue, category catalogue, new arrivals, sale, and product detail pages.
+- Customer login, registration, logout, basic account/order-history view, cart and wishlist APIs, cart page, search suggestions, and health endpoint.
+- Checkout, inventory reservation, order confirmation/detail, cash-on-delivery, Razorpay order initiation/verification, and Razorpay payment webhooks.
+- Customer profile, password and address forms; return policy and customer return requests; admin sign-in/dashboard and permission-gated read-only module lists.
+
+Admin create/update actions, CMS editing, product/category writes, password-reset email delivery, and remaining PHP routes still require migration. Admin module lists are read-only for now. Guest order links use `guest_order_access` from migration `014_guest_order_access.sql`; apply it before guest checkout. Do not switch production traffic until all workflows are ported and tested against staging MySQL and payment-provider credentials.
 
 ## Database verification
 

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initializeSite = () => {
     const body = document.body;
     const header = document.querySelector('[data-header]');
     const drawer = document.querySelector('#mobile-drawer');
@@ -233,4 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeSite, { once: true });
+else initializeSite();
