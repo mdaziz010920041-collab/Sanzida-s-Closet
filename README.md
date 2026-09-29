@@ -10,13 +10,13 @@ Requirements: Node.js 20 or newer and a MySQL database with `database/schema.sql
 2. Copy `.env.example` to `.env` and configure the MySQL connection, canonical `APP_URL`, and a unique `SESSION_SECRET` with at least 32 characters.
 3. Run `npm run dev` and open `http://localhost:3000`.
 
-`npm run build` performs Node syntax checks. The local server serves assets from `assets/` and uploads from `uploads/`.
+`npm run build` performs Node syntax checks. The local server serves assets from `assets/` and uploads from `uploads/`. On Windows PowerShell systems that block `npm.ps1`, use `npm.cmd run build` and `npm.cmd run dev`.
 
 ## Vercel
 
-Import the repository as a Node.js project. Configure `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `APP_URL`, `SESSION_SECRET`, and the payment secrets in Vercel's server-side environment settings. Do not expose secrets with a `NEXT_PUBLIC_` prefix. Use a remotely reachable MySQL provider; `127.0.0.1` is only a local default.
+Import the repository as a Node.js project and redeploy after every change to `vercel.json`, `api/`, `lib/`, or `assets/`. The project pins Vercel to Node 20 and uses `npm run build` as its deployment check. Configure `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL`, `SESSION_SECRET`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `PAYMENT_PROVIDER`, `PAYMENT_MODE`, `PAYMENT_CURRENCY`, `RAZORPAY_KEY_ID`, `RAZORPAY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET` in Vercel's server-side environment settings. Do not expose secrets with a `NEXT_PUBLIC_` prefix. Use a remotely reachable MySQL provider; `127.0.0.1` is only a local default. Set `PAYMENT_MODE=test` until sandbox checkout and webhook verification pass; only then switch to `live`.
 
-Vercel routes requests to `api/index.js`; static files are served separately. Customer and guest sessions use signed cookies plus the existing `user_sessions` table, so `SESSION_SECRET` must be stable across deployments and at least 32 characters long.
+Vercel routes requests to `api/index.js`; the handler also serves `/assets/` and `/uploads/` with safe path validation and explicit MIME types. Customer and guest sessions use signed cookies plus the existing `user_sessions` table, so `SESSION_SECRET` must be stable across deployments and at least 32 characters long. Verify `/api/health` after deployment; `status: "ok"` confirms database connectivity, while `status: "degraded"` means the app is serving but the database is unavailable or misconfigured.
 
 ## Migrated routes
 

@@ -1,3 +1,5 @@
+const fs = require('node:fs');
+const path = require('node:path');
 const { databasePool } = require('../lib/database');
 const { catalogueFilters, findProduct, listCategories, listProducts } = require('../lib/catalogue');
 const { renderCatalogue, renderCategories, renderErrorPage, renderProduct } = require('../lib/catalogue-pages');
@@ -26,6 +28,58 @@ const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character
     '"': '&quot;',
     "'": '&#39;',
 }[character]));
+
+const staticContentTypes = {
+    '.css': 'text/css; charset=utf-8',
+    '.gif': 'image/gif',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.js': 'text/javascript; charset=utf-8',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.webp': 'image/webp',
+};
+
+async function serveStaticAsset(request, response) {
+    if (!['GET', 'HEAD'].includes(request.method)) return false;
+
+    let pathname;
+    try {
+        pathname = decodeURIComponent(new URL(request.url || '/', 'http://localhost').pathname);
+    } catch {
+        response.writeHead(400);
+        response.end();
+        return true;
+    }
+
+    const prefix = pathname.startsWith('/assets/') ? '/assets/' : pathname.startsWith('/uploads/') ? '/uploads/' : '';
+    if (!prefix) return false;
+
+    const root = path.resolve(__dirname, '..', prefix.slice(1, -1));
+    const filePath = path.resolve(root, pathname.slice(prefix.length));
+    if (!filePath.startsWith(`${root}${path.sep}`)) {
+        response.writeHead(403);
+        response.end();
+        return true;
+    }
+
+    try {
+        const stat = await fs.promises.stat(filePath);
+        if (!stat.isFile()) throw new Error('Not a file');
+        response.writeHead(200, {
+            'cache-control': 'public, max-age=31536000, immutable',
+            'content-type': staticContentTypes[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
+            'content-length': stat.size,
+            'x-content-type-options': 'nosniff',
+        });
+        if (request.method === 'HEAD') response.end();
+        else response.end(await fs.promises.readFile(filePath));
+    } catch {
+        response.writeHead(404);
+        response.end();
+    }
+    return true;
+}
 
 function imageUrl(imagePath) {
     const value = String(imagePath || '').trim();
@@ -95,6 +149,8 @@ async function homePage(request) {
 }
 
 module.exports = async function handler(request, response) {
+    if (await serveStaticAsset(request, response)) return;
+
     const requestUrl = new URL(request.url || '/', `http://${request.headers.host || 'localhost'}`);
     const pathname = requestUrl.pathname.replace(/\/+$/, '') || '/';
     const requestedNext = requestUrl.searchParams.get('next') || '/account/';
